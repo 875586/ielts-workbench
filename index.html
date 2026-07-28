@@ -586,6 +586,84 @@
       line-height: 1.55;
     }
 
+    .bookmarklet-box {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      margin-top: 22px;
+      padding: 18px;
+      border: 1px dashed #b9d2f4;
+      border-radius: 17px;
+      background: #f4f8ff;
+      text-align: left;
+    }
+
+    .bookmarklet-copy {
+      min-width: 0;
+    }
+
+    .bookmarklet-copy strong {
+      display: block;
+      color: var(--blue-950);
+      font-size: 14px;
+    }
+
+    .bookmarklet-copy p {
+      margin: 5px 0 0;
+      color: var(--ink-500);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .bookmarklet-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bookmarklet-button,
+    .bookmarklet-copy-button {
+      display: inline-flex;
+      min-height: 40px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 11px;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .bookmarklet-button {
+      padding: 0 14px;
+      border: 1px solid #f6b79d;
+      color: #c94718;
+      background: #fff;
+      box-shadow: 0 5px 14px rgba(207, 77, 30, 0.1);
+      cursor: grab;
+      text-decoration: none;
+    }
+
+    .bookmarklet-button:active {
+      cursor: grabbing;
+    }
+
+    .bookmarklet-copy-button {
+      padding: 0 11px;
+      border: 1px solid #cfe0f8;
+      color: var(--blue-700);
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .bookmarklet-tip {
+      grid-column: 1 / -1;
+      margin: -4px 0 0;
+      color: var(--ink-500);
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
     .floating-add {
       position: fixed;
       right: 34px;
@@ -1642,6 +1720,21 @@
         margin: 0;
       }
 
+      .bookmarklet-box {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 14px;
+      }
+
+      .bookmarklet-actions {
+        display: grid;
+        grid-template-columns: 1fr auto;
+      }
+
+      .bookmarklet-button {
+        min-width: 0;
+      }
+
       .floating-add {
         right: 16px;
         bottom: 20px;
@@ -1870,6 +1963,26 @@
                 </div>
               </div>
 
+              <div class="bookmarklet-box">
+                <div class="bookmarklet-copy">
+                  <strong>不想来回切换？安装一次“＋收词”按钮</strong>
+                  <p>把右侧按钮拖到 Safari 收藏夹栏。以后在新东方选中单词，点击收藏夹里的“＋收词”，小窗口会自动带入并翻译。</p>
+                </div>
+                <div class="bookmarklet-actions">
+                  <a
+                    class="bookmarklet-button"
+                    id="bookmarkletLink"
+                    href="#"
+                    draggable="true"
+                    title="拖到 Safari 收藏夹栏"
+                  >＋ 收词</a>
+                  <button class="bookmarklet-copy-button" id="copyBookmarkletButton" type="button">复制代码</button>
+                </div>
+                <p class="bookmarklet-tip">
+                  Safari 没显示收藏夹栏时：点击顶部“显示”→“显示收藏夹栏”，再把“＋收词”拖进去。只需安装一次。
+                </p>
+              </div>
+
               <p class="privacy-note">
                 🔒 独立标签页会把新东方视为第一方网站，因此登录 Cookie 更容易正常保留。
               </p>
@@ -2041,6 +2154,7 @@
     (() => {
       "use strict";
 
+      const BOOKMARKLET_CODE = `javascript:(()=>{const t=(window.getSelection?String(window.getSelection()):"").trim();if(!t){alert("请先选中要收录的英文单词");return}const u="https://875586.github.io/ielts-workbench/?collector=1&auto=1&word="+encodeURIComponent(t);window.open(u,"ieltsWordCollector","popup=yes,width=440,height=720,resizable=yes,scrollbars=yes")})()`;
       const STORAGE_KEY = "ielts-workbench-vocabulary-v1";
       const PROFILE_KEY = "ielts-workbench-profile-v1";
       const DEFAULT_PROFILE = {
@@ -2080,6 +2194,8 @@
         workspaceNameText: document.getElementById("workspaceNameText"),
         practiceLinks: [...document.querySelectorAll("[data-practice-link]")],
         toolbarAddWordButton: document.getElementById("toolbarAddWordButton"),
+        bookmarkletLink: document.getElementById("bookmarkletLink"),
+        copyBookmarkletButton: document.getElementById("copyBookmarkletButton"),
         openAddModal: document.getElementById("openAddModal"),
         closeAddModal: document.getElementById("closeAddModal"),
         modalBackdrop: document.getElementById("modalBackdrop"),
@@ -2575,7 +2691,7 @@
         `).join("");
       }
 
-      async function openModal() {
+      async function openModal(prefillWord = "") {
         lastFocusedElement = document.activeElement;
         elements.wordForm.reset();
         elements.categoryInput.value = state.activeCategory;
@@ -2586,7 +2702,13 @@
         elements.modalBackdrop.setAttribute("aria-hidden", "false");
         document.body.style.overflow = "hidden";
 
-        await readClipboard();
+        if (typeof prefillWord === "string" && prefillWord.trim()) {
+          elements.wordInput.value = prefillWord.trim().slice(0, 120);
+          elements.clipboardStatus.textContent = "已自动带入刚才选中的单词。";
+          elements.clipboardStatus.classList.add("success");
+        } else {
+          await readClipboard();
+        }
         elements.wordInput.focus();
       }
 
@@ -2709,6 +2831,11 @@
         renderWordbook();
         closeModal();
         showToast("保存成功！", "success");
+
+        const pageParams = new URLSearchParams(window.location.search);
+        if (pageParams.get("collector") === "1" && window.opener) {
+          window.setTimeout(() => window.close(), 700);
+        }
       }
 
       function showToast(message, type = "") {
@@ -2763,7 +2890,23 @@
         });
       });
 
-      elements.toolbarAddWordButton.addEventListener("click", openModal);
+      elements.bookmarkletLink.href = BOOKMARKLET_CODE;
+      elements.bookmarkletLink.addEventListener("click", (event) => {
+        event.preventDefault();
+        showToast("请把“＋收词”按钮拖到 Safari 收藏夹栏，只需安装一次。");
+      });
+
+      elements.copyBookmarkletButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(BOOKMARKLET_CODE);
+          showToast("安装代码已复制。可在 Safari 新建书签并粘贴到网址栏。", "success");
+        } catch (error) {
+          console.info("无法复制书签代码：", error);
+          showToast("复制失败，请直接把“＋收词”按钮拖到收藏夹栏。", "error");
+        }
+      });
+
+      elements.toolbarAddWordButton.addEventListener("click", () => openModal());
 
       elements.sourceInput.addEventListener("blur", () => {
         elements.sourceInput.value = normalizeSource(elements.sourceInput.value);
@@ -2795,7 +2938,7 @@
         renderWordbook();
       });
 
-      elements.openAddModal.addEventListener("click", openModal);
+      elements.openAddModal.addEventListener("click", () => openModal());
       elements.closeAddModal.addEventListener("click", closeModal);
       elements.pasteButton.addEventListener("click", readClipboard);
       elements.translateButton.addEventListener("click", translateWord);
@@ -2832,6 +2975,17 @@
 
       renderProfile();
       renderWordbook();
+
+      const incomingParams = new URLSearchParams(window.location.search);
+      const incomingWord = (incomingParams.get("word") || "").trim().slice(0, 120);
+      if (incomingParams.get("collector") === "1" && incomingWord) {
+        window.setTimeout(async () => {
+          await openModal(incomingWord);
+          if (incomingParams.get("auto") === "1") {
+            await translateWord();
+          }
+        }, 0);
+      }
     })();
   </script>
 </body>
