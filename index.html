@@ -434,32 +434,156 @@
       transform: translateY(1px);
     }
 
-    .external-link.load-url-button {
+    .external-link.add-word-button {
       border-color: #ffd2bf;
       color: #cf4d1e;
       background: #fff5f0;
     }
 
-    .external-link.load-url-button:hover {
+    .external-link.add-word-button:hover {
       border-color: #f6b79d;
       background: #ffe9df;
     }
 
-    .iframe-wrap {
-      position: relative;
+    .practice-launcher {
+      display: grid;
       flex: 1 1 auto;
       min-height: 0;
+      place-items: center;
+      overflow: auto;
+      padding: clamp(24px, 5vw, 64px);
       background:
-        linear-gradient(90deg, transparent 49%, rgba(35, 100, 196, 0.03) 50%, transparent 51%),
+        radial-gradient(circle at 20% 18%, rgba(88, 150, 238, 0.18), transparent 34%),
+        radial-gradient(circle at 86% 78%, rgba(255, 132, 82, 0.13), transparent 31%),
         var(--blue-50);
     }
 
-    .iframe-wrap iframe {
-      display: block;
+    .launch-card {
+      position: relative;
       width: 100%;
-      height: 100%;
-      border: 0;
-      background: #fff;
+      max-width: 820px;
+      padding: clamp(28px, 5vw, 52px);
+      overflow: hidden;
+      border: 1px solid rgba(189, 213, 245, 0.9);
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 24px 70px rgba(31, 76, 139, 0.14);
+      text-align: center;
+    }
+
+    .launch-card::before {
+      position: absolute;
+      top: -74px;
+      right: -58px;
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: rgba(69, 132, 224, 0.08);
+      content: "";
+    }
+
+    .launch-badge {
+      display: inline-flex;
+      min-height: 30px;
+      align-items: center;
+      padding: 0 12px;
+      border: 1px solid #cfe0f8;
+      border-radius: 999px;
+      color: var(--blue-700);
+      background: var(--blue-50);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .launch-card h2 {
+      margin: 18px 0 9px;
+      color: var(--blue-950);
+      font-size: clamp(26px, 4vw, 40px);
+      letter-spacing: -0.035em;
+    }
+
+    .launch-description {
+      max-width: 620px;
+      margin: 0 auto;
+      color: var(--ink-500);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .launch-primary {
+      display: inline-flex;
+      min-height: 52px;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      margin-top: 24px;
+      padding: 0 24px;
+      border-radius: 14px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue-700), #4285e5);
+      box-shadow: 0 12px 28px rgba(35, 100, 196, 0.28);
+      font-size: 15px;
+      font-weight: 750;
+      text-decoration: none;
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .launch-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 34px rgba(35, 100, 196, 0.34);
+    }
+
+    .launch-primary:active {
+      transform: translateY(0);
+    }
+
+    .launch-steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 30px;
+      text-align: left;
+    }
+
+    .launch-step {
+      padding: 16px;
+      border: 1px solid #e1eaf6;
+      border-radius: 15px;
+      background: #fbfdff;
+    }
+
+    .launch-step-number {
+      display: grid;
+      width: 27px;
+      height: 27px;
+      margin-bottom: 10px;
+      place-items: center;
+      border-radius: 9px;
+      color: #fff;
+      background: var(--blue-700);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .launch-step strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--ink-900);
+      font-size: 13px;
+    }
+
+    .launch-step p {
+      margin: 0;
+      color: var(--ink-500);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .privacy-note {
+      margin: 20px 0 0;
+      color: var(--ink-500);
+      font-size: 11px;
+      line-height: 1.55;
     }
 
     .floating-add {
@@ -1475,6 +1599,49 @@
         font-size: 11px;
       }
 
+      .practice-launcher {
+        place-items: start center;
+        padding: 16px 12px 88px;
+      }
+
+      .launch-card {
+        padding: 24px 18px;
+        border-radius: 20px;
+      }
+
+      .launch-card h2 {
+        margin-top: 14px;
+        font-size: 25px;
+      }
+
+      .launch-description {
+        font-size: 13px;
+      }
+
+      .launch-primary {
+        width: 100%;
+        min-height: 48px;
+        margin-top: 19px;
+      }
+
+      .launch-steps {
+        grid-template-columns: 1fr;
+        gap: 9px;
+        margin-top: 20px;
+      }
+
+      .launch-step {
+        display: grid;
+        grid-template-columns: 30px 1fr;
+        column-gap: 10px;
+        padding: 12px;
+      }
+
+      .launch-step-number {
+        grid-row: 1 / 3;
+        margin: 0;
+      }
+
       .floating-add {
         right: 16px;
         bottom: 20px;
@@ -1648,28 +1815,65 @@
           <header class="practice-toolbar">
             <div class="page-heading">
               <h1 id="practiceTitle">刷题入口</h1>
-              <p>做题页面保持在工作台内，右下角“+”会始终显示</p>
+              <p>新东方在独立标签页打开，登录状态更稳定；工作台留在这里收录生词</p>
             </div>
             <div class="practice-actions">
               <span class="copy-hint">
-                新标签页没有“+”？复制题目网址
+                做题时复制生词，再回到这里
               </span>
-              <button class="external-link load-url-button" id="loadPracticeUrlButton" type="button">
-                载入题目 <span aria-hidden="true">↙</span>
-              </button>
-              <button class="external-link" id="resetPracticeButton" type="button">
-                题库首页 <span aria-hidden="true">↻</span>
+              <a
+                class="external-link"
+                href="https://ieltscat.xdf.cn/?dt_dapp=1"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-practice-link
+              >
+                打开新东方题库 <span aria-hidden="true">↗</span>
+              </a>
+              <button class="external-link add-word-button" id="toolbarAddWordButton" type="button">
+                粘贴生词 <span aria-hidden="true">+</span>
               </button>
             </div>
           </header>
-          <div class="iframe-wrap">
-            <iframe
-              id="practiceFrame"
-              src="https://ieltscat.xdf.cn/?dt_dapp=1"
-              title="新东方雅思喵刷题网站"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allow="clipboard-read; clipboard-write"
-            ></iframe>
+          <div class="practice-launcher">
+            <div class="launch-card">
+              <span class="launch-badge">Safari 推荐方式</span>
+              <h2>新标签页做题，登录不再打转</h2>
+              <p class="launch-description">
+                新东方将作为独立网站打开，避开浏览器对 iframe 跨站登录的限制。工作台不会关闭，做题时复制生词，回来点击橙色“+”即可收录。
+              </p>
+              <a
+                class="launch-primary"
+                href="https://ieltscat.xdf.cn/?dt_dapp=1"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-practice-link
+              >
+                打开新东方雅思喵 <span aria-hidden="true">↗</span>
+              </a>
+
+              <div class="launch-steps" aria-label="使用步骤">
+                <div class="launch-step">
+                  <span class="launch-step-number">1</span>
+                  <strong>打开题库</strong>
+                  <p>在新标签页完成登录并开始做题。</p>
+                </div>
+                <div class="launch-step">
+                  <span class="launch-step-number">2</span>
+                  <strong>复制生词</strong>
+                  <p>选中不会的英文单词并复制。</p>
+                </div>
+                <div class="launch-step">
+                  <span class="launch-step-number">3</span>
+                  <strong>返回收录</strong>
+                  <p>回到工作台，点击右下角橙色“+”。</p>
+                </div>
+              </div>
+
+              <p class="privacy-note">
+                🔒 独立标签页会把新东方视为第一方网站，因此登录 Cookie 更容易正常保留。
+              </p>
+            </div>
           </div>
         </div>
 
@@ -1837,7 +2041,6 @@
     (() => {
       "use strict";
 
-      const PRACTICE_URL = "https://ieltscat.xdf.cn/?dt_dapp=1";
       const STORAGE_KEY = "ielts-workbench-vocabulary-v1";
       const PROFILE_KEY = "ielts-workbench-profile-v1";
       const DEFAULT_PROFILE = {
@@ -1875,9 +2078,8 @@
         avatarImage: document.getElementById("avatarImage"),
         avatarFallback: document.getElementById("avatarFallback"),
         workspaceNameText: document.getElementById("workspaceNameText"),
-        practiceFrame: document.getElementById("practiceFrame"),
-        loadPracticeUrlButton: document.getElementById("loadPracticeUrlButton"),
-        resetPracticeButton: document.getElementById("resetPracticeButton"),
+        practiceLinks: [...document.querySelectorAll("[data-practice-link]")],
+        toolbarAddWordButton: document.getElementById("toolbarAddWordButton"),
         openAddModal: document.getElementById("openAddModal"),
         closeAddModal: document.getElementById("closeAddModal"),
         modalBackdrop: document.getElementById("modalBackdrop"),
@@ -2423,50 +2625,6 @@
         }
       }
 
-      function parsePracticeUrl(value) {
-        try {
-          const url = new URL(String(value || "").trim());
-          const isAllowedHost =
-            url.hostname === "ieltscat.xdf.cn" ||
-            url.hostname.endsWith(".ieltscat.xdf.cn");
-
-          if (url.protocol !== "https:" || !isAllowedHost) return null;
-          return url.href;
-        } catch (error) {
-          return null;
-        }
-      }
-
-      async function loadPracticeFromClipboard() {
-        let clipboardValue = "";
-
-        if (navigator.clipboard && typeof navigator.clipboard.readText === "function") {
-          try {
-            clipboardValue = (await navigator.clipboard.readText()).trim();
-          } catch (error) {
-            console.info("无法自动读取题目网址：", error);
-          }
-        }
-
-        let practiceUrl = parsePracticeUrl(clipboardValue);
-        if (!practiceUrl) {
-          const manualValue = window.prompt(
-            "请粘贴雅思喵新标签页中的完整题目网址：",
-            clipboardValue
-          );
-          if (manualValue === null) return;
-          practiceUrl = parsePracticeUrl(manualValue);
-        }
-
-        if (!practiceUrl) {
-          showToast("没有识别到有效的雅思喵题目网址。", "error");
-          return;
-        }
-
-        elements.practiceFrame.src = practiceUrl;
-        showToast("题目已载入工作台，右下角“+”会保持显示。", "success");
-      }
-
       function setTranslationLoading(isLoading) {
         elements.translateButton.disabled = isLoading;
         elements.translateButton.classList.toggle("loading", isLoading);
@@ -2599,12 +2757,13 @@
         elements.workspaceNameText.textContent = pastedText;
       });
 
-      elements.loadPracticeUrlButton.addEventListener("click", loadPracticeFromClipboard);
-
-      elements.resetPracticeButton.addEventListener("click", () => {
-        elements.practiceFrame.src = PRACTICE_URL;
-        showToast("已返回雅思喵题库首页。", "success");
+      elements.practiceLinks.forEach((link) => {
+        link.addEventListener("click", () => {
+          showToast("新东方已在新标签页打开。复制生词后，回来点击橙色“+”。", "success");
+        });
       });
+
+      elements.toolbarAddWordButton.addEventListener("click", openModal);
 
       elements.sourceInput.addEventListener("blur", () => {
         elements.sourceInput.value = normalizeSource(elements.sourceInput.value);
