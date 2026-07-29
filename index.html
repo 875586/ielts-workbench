@@ -445,6 +445,43 @@
       background: #ffe9df;
     }
 
+    .practice-frame-wrap {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .practice-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+
+    .frame-loading {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      color: var(--blue-700);
+      background:
+        radial-gradient(circle at 50% 35%, rgba(74, 141, 240, 0.13), transparent 32%),
+        var(--blue-50);
+      font-size: 14px;
+      font-weight: 700;
+      pointer-events: none;
+      transition: opacity 180ms ease, visibility 180ms ease;
+    }
+
+    .frame-loading.loaded {
+      opacity: 0;
+      visibility: hidden;
+    }
+
     .practice-launcher {
       display: grid;
       flex: 1 1 auto;
@@ -1677,6 +1714,10 @@
         font-size: 11px;
       }
 
+      .practice-frame-wrap {
+        min-height: 0;
+      }
+
       .practice-launcher {
         place-items: start center;
         padding: 16px 12px 88px;
@@ -1908,12 +1949,15 @@
           <header class="practice-toolbar">
             <div class="page-heading">
               <h1 id="practiceTitle">刷题入口</h1>
-              <p>新东方在独立标签页打开，登录状态更稳定；工作台留在这里收录生词</p>
+              <p>题库已放进工作台；复制生词后，直接点击右下角橙色“+”收录</p>
             </div>
             <div class="practice-actions">
               <span class="copy-hint">
-                做题时复制生词，再回到这里
+                选词并按 <kbd>⌘ C</kbd>，再点“+”
               </span>
+              <button class="external-link" id="reloadPracticeButton" type="button">
+                刷新题库 <span aria-hidden="true">↻</span>
+              </button>
               <a
                 class="external-link"
                 href="https://ieltscat.xdf.cn/?dt_dapp=1"
@@ -1921,72 +1965,20 @@
                 rel="noopener noreferrer"
                 data-practice-link
               >
-                打开新东方题库 <span aria-hidden="true">↗</span>
+                新窗口打开 <span aria-hidden="true">↗</span>
               </a>
-              <button class="external-link add-word-button" id="toolbarAddWordButton" type="button">
-                粘贴生词 <span aria-hidden="true">+</span>
-              </button>
             </div>
           </header>
-          <div class="practice-launcher">
-            <div class="launch-card">
-              <span class="launch-badge">Safari 推荐方式</span>
-              <h2>新标签页做题，登录不再打转</h2>
-              <p class="launch-description">
-                新东方将作为独立网站打开，避开浏览器对 iframe 跨站登录的限制。工作台不会关闭，做题时复制生词，回来点击橙色“+”即可收录。
-              </p>
-              <a
-                class="launch-primary"
-                href="https://ieltscat.xdf.cn/?dt_dapp=1"
-                target="_blank"
-                rel="noopener noreferrer"
-                data-practice-link
-              >
-                打开新东方雅思喵 <span aria-hidden="true">↗</span>
-              </a>
-
-              <div class="launch-steps" aria-label="使用步骤">
-                <div class="launch-step">
-                  <span class="launch-step-number">1</span>
-                  <strong>打开题库</strong>
-                  <p>在新标签页完成登录并开始做题。</p>
-                </div>
-                <div class="launch-step">
-                  <span class="launch-step-number">2</span>
-                  <strong>复制生词</strong>
-                  <p>选中不会的英文单词并复制。</p>
-                </div>
-                <div class="launch-step">
-                  <span class="launch-step-number">3</span>
-                  <strong>返回收录</strong>
-                  <p>回到工作台，点击右下角橙色“+”。</p>
-                </div>
-              </div>
-
-              <div class="bookmarklet-box">
-                <div class="bookmarklet-copy">
-                  <strong>不想来回切换？安装一次“＋收词”按钮</strong>
-                  <p>把右侧按钮拖到 Safari 收藏夹栏。以后在新东方选中单词，点击收藏夹里的“＋收词”，小窗口会自动带入并翻译。</p>
-                </div>
-                <div class="bookmarklet-actions">
-                  <a
-                    class="bookmarklet-button"
-                    id="bookmarkletLink"
-                    href="#"
-                    draggable="true"
-                    title="拖到 Safari 收藏夹栏"
-                  >＋ 收词</a>
-                  <button class="bookmarklet-copy-button" id="copyBookmarkletButton" type="button">复制代码</button>
-                </div>
-                <p class="bookmarklet-tip">
-                  Safari 没显示收藏夹栏时：点击顶部“显示”→“显示收藏夹栏”，再把“＋收词”拖进去。只需安装一次。
-                </p>
-              </div>
-
-              <p class="privacy-note">
-                🔒 独立标签页会把新东方视为第一方网站，因此登录 Cookie 更容易正常保留。
-              </p>
-            </div>
+          <div class="practice-frame-wrap">
+            <div class="frame-loading" id="practiceFrameLoading">正在加载新东方雅思题库…</div>
+            <iframe
+              class="practice-frame"
+              id="practiceFrame"
+              src="https://ieltscat.xdf.cn/?dt_dapp=1"
+              title="新东方雅思题库"
+              allow="clipboard-read; clipboard-write; autoplay; fullscreen"
+              referrerpolicy="strict-origin-when-cross-origin"
+            ></iframe>
           </div>
         </div>
 
@@ -2154,7 +2146,6 @@
     (() => {
       "use strict";
 
-      const BOOKMARKLET_CODE = `javascript:(()=>{const t=(window.getSelection?String(window.getSelection()):"").trim();if(!t){alert("请先选中要收录的英文单词");return}const u="https://875586.github.io/ielts-workbench/?collector=1&auto=1&word="+encodeURIComponent(t);window.open(u,"ieltsWordCollector","popup=yes,width=440,height=720,resizable=yes,scrollbars=yes")})()`;
       const STORAGE_KEY = "ielts-workbench-vocabulary-v1";
       const PROFILE_KEY = "ielts-workbench-profile-v1";
       const DEFAULT_PROFILE = {
@@ -2193,9 +2184,9 @@
         avatarFallback: document.getElementById("avatarFallback"),
         workspaceNameText: document.getElementById("workspaceNameText"),
         practiceLinks: [...document.querySelectorAll("[data-practice-link]")],
-        toolbarAddWordButton: document.getElementById("toolbarAddWordButton"),
-        bookmarkletLink: document.getElementById("bookmarkletLink"),
-        copyBookmarkletButton: document.getElementById("copyBookmarkletButton"),
+        practiceFrame: document.getElementById("practiceFrame"),
+        practiceFrameLoading: document.getElementById("practiceFrameLoading"),
+        reloadPracticeButton: document.getElementById("reloadPracticeButton"),
         openAddModal: document.getElementById("openAddModal"),
         closeAddModal: document.getElementById("closeAddModal"),
         modalBackdrop: document.getElementById("modalBackdrop"),
@@ -2886,27 +2877,19 @@
 
       elements.practiceLinks.forEach((link) => {
         link.addEventListener("click", () => {
-          showToast("新东方已在新标签页打开。复制生词后，回来点击橙色“+”。", "success");
+          showToast("已在新窗口打开新东方题库。", "success");
         });
       });
 
-      elements.bookmarkletLink.href = BOOKMARKLET_CODE;
-      elements.bookmarkletLink.addEventListener("click", (event) => {
-        event.preventDefault();
-        showToast("请把“＋收词”按钮拖到 Safari 收藏夹栏，只需安装一次。");
+      elements.practiceFrame.addEventListener("load", () => {
+        elements.practiceFrameLoading.classList.add("loaded");
       });
 
-      elements.copyBookmarkletButton.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(BOOKMARKLET_CODE);
-          showToast("安装代码已复制。可在 Safari 新建书签并粘贴到网址栏。", "success");
-        } catch (error) {
-          console.info("无法复制书签代码：", error);
-          showToast("复制失败，请直接把“＋收词”按钮拖到收藏夹栏。", "error");
-        }
+      elements.reloadPracticeButton.addEventListener("click", () => {
+        elements.practiceFrameLoading.classList.remove("loaded");
+        elements.practiceFrame.src = "https://ieltscat.xdf.cn/?dt_dapp=1&reload=" + Date.now();
+        showToast("正在重新加载题库。");
       });
-
-      elements.toolbarAddWordButton.addEventListener("click", () => openModal());
 
       elements.sourceInput.addEventListener("blur", () => {
         elements.sourceInput.value = normalizeSource(elements.sourceInput.value);
