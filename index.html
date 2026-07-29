@@ -2961,9 +2961,17 @@
 
       const incomingParams = new URLSearchParams(window.location.search);
       const incomingWord = (incomingParams.get("word") || "").trim().slice(0, 120);
+      const incomingCategory = incomingParams.get("category") || "";
+      const incomingSource = normalizeSource(incomingParams.get("source") || "");
       if (incomingParams.get("collector") === "1" && incomingWord) {
         window.setTimeout(async () => {
           await openModal(incomingWord);
+          if (CATEGORY_LABELS[incomingCategory]) {
+            elements.categoryInput.value = incomingCategory;
+          }
+          if (incomingSource) {
+            elements.sourceInput.value = incomingSource;
+          }
           if (incomingParams.get("auto") === "1") {
             await translateWord();
           }
