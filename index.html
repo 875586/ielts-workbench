@@ -980,6 +980,39 @@
       box-shadow: none;
     }
 
+    .review-button.completed {
+      color: #147252;
+      background: #e4f7ef;
+      box-shadow: none;
+    }
+
+    .review-actions-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .review-overview-button {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      gap: 7px;
+      padding: 0 15px;
+      border: 1px solid #cfe0f8;
+      border-radius: 11px;
+      color: var(--blue-700);
+      background: var(--blue-50);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .review-overview-button:hover,
+    .review-overview-button.active {
+      border-color: #aac9f1;
+      background: var(--blue-100);
+    }
+
     .word-list {
       display: grid;
       gap: 14px;
@@ -1068,6 +1101,21 @@
       content: "";
     }
 
+    .word-card.reviewed-today {
+      border-color: #b8e3d2;
+      background: linear-gradient(96deg, #f0fbf7, #fff);
+    }
+
+    .word-card.reviewed-today::before {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 4px;
+      background: var(--success);
+      content: "";
+    }
+
     .word-main {
       min-width: 0;
     }
@@ -1103,6 +1151,11 @@
     .badge.due-label {
       color: #b82f2f;
       background: #ffdede;
+    }
+
+    .badge.reviewed-label {
+      color: #147252;
+      background: #ddf5eb;
     }
 
     .badge.source-label {
@@ -1251,6 +1304,138 @@
       line-height: 1.7;
       white-space: pre-wrap;
       overflow-wrap: anywhere;
+    }
+
+    /* 单张切换复习 */
+    .review-session-wrap {
+      display: block;
+      padding: clamp(22px, 4vw, 42px);
+      background:
+        radial-gradient(circle at 16% 18%, rgba(74, 141, 240, 0.12), transparent 30%),
+        #fbfdff;
+    }
+
+    .review-session {
+      width: min(680px, 100%);
+      margin: 0 auto;
+    }
+
+    .review-progress-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+      color: var(--ink-500);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .review-progress-row strong {
+      color: var(--blue-800);
+    }
+
+    .review-progress-track {
+      height: 8px;
+      margin-bottom: 22px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e5edf8;
+    }
+
+    .review-progress-bar {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue-600), var(--success));
+      transition: width 260ms ease;
+    }
+
+    .review-single-card,
+    .review-single-card .flip-card-inner,
+    .review-single-card .flip-face {
+      min-height: 360px;
+    }
+
+    .review-single-card .flip-face {
+      padding: 42px;
+      border-radius: 24px;
+      box-shadow: 0 22px 54px rgba(22, 53, 104, 0.13);
+    }
+
+    .review-single-card h2 {
+      font-size: clamp(34px, 7vw, 58px);
+    }
+
+    .review-single-card .flip-face .flip-meaning {
+      max-width: 520px;
+      color: var(--blue-950);
+      font-size: clamp(23px, 4vw, 34px);
+      font-weight: 750;
+      line-height: 1.55;
+    }
+
+    .review-session-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .review-action-button {
+      min-height: 50px;
+      border-radius: 13px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 750;
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .review-action-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .review-action-button.again {
+      border: 1px solid #f1cccc;
+      color: #b43c3c;
+      background: #fff2f2;
+    }
+
+    .review-action-button.known {
+      color: #fff;
+      background: linear-gradient(135deg, #159568, #21b47f);
+      box-shadow: 0 8px 18px rgba(25, 169, 116, 0.22);
+    }
+
+    .review-complete-card {
+      display: grid;
+      min-height: 430px;
+      place-items: center;
+      padding: 54px 24px;
+      border: 1px solid #c6eadc;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 50% 12%, rgba(25, 169, 116, 0.13), transparent 34%),
+        #f8fffc;
+      box-shadow: 0 20px 52px rgba(22, 53, 104, 0.1);
+      text-align: center;
+    }
+
+    .review-complete-card .empty-state-icon {
+      background: #ddf5eb;
+    }
+
+    .review-complete-card h2 {
+      margin: 0;
+      color: #116847;
+      font-size: 24px;
+    }
+
+    .review-complete-card p {
+      margin: 11px 0 22px;
+      color: var(--ink-500);
+      line-height: 1.7;
     }
 
     /* 新增单词对话框 */
@@ -1836,6 +2021,15 @@
         justify-content: center;
       }
 
+      .review-actions-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .review-overview-button {
+        justify-content: center;
+      }
+
       .word-list {
         gap: 12px;
         padding: 13px;
@@ -1859,6 +2053,24 @@
       }
 
       .review-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .review-session-wrap {
+        padding: 18px 13px 28px;
+      }
+
+      .review-single-card,
+      .review-single-card .flip-card-inner,
+      .review-single-card .flip-face {
+        min-height: 330px;
+      }
+
+      .review-single-card .flip-face {
+        padding: 28px 20px;
+      }
+
+      .review-session-actions {
         grid-template-columns: 1fr;
       }
 
@@ -2045,10 +2257,16 @@
                   data-category="reading"
                 >阅读</button>
               </div>
-              <button class="review-button" id="reviewButton" type="button">
-                <span aria-hidden="true">▶</span>
-                <span>开始复习</span>
-              </button>
+              <div class="review-actions-group">
+                <button class="review-overview-button" id="reviewGridButton" type="button">
+                  <span aria-hidden="true">▦</span>
+                  <span>卡片总览</span>
+                </button>
+                <button class="review-button" id="reviewButton" type="button">
+                  <span aria-hidden="true">▶</span>
+                  <span>开始复习</span>
+                </button>
+              </div>
             </div>
 
             <div class="word-list" id="wordList" role="tabpanel" aria-live="polite"></div>
@@ -2162,6 +2380,10 @@
         activeView: "practice",
         activeCategory: "listening",
         reviewOnly: false,
+        reviewGrid: false,
+        reviewQueue: [],
+        reviewTotal: 0,
+        reviewCompleted: 0,
         searchQuery: "",
         lastSource: "",
         profile: loadProfile(),
@@ -2203,6 +2425,7 @@
         sourceSearchInput: document.getElementById("sourceSearchInput"),
         clearSearchButton: document.getElementById("clearSearchButton"),
         searchSummary: document.getElementById("searchSummary"),
+        reviewGridButton: document.getElementById("reviewGridButton"),
         reviewButton: document.getElementById("reviewButton"),
         wordList: document.getElementById("wordList"),
         totalWordCount: document.getElementById("totalWordCount"),
@@ -2420,7 +2643,10 @@
               category: item.category,
               source: normalizeSource(item.source) || "未分类",
               addedDate: item.addedDate,
-              createdAt: item.createdAt || `${item.addedDate}T00:00:00`
+              createdAt: item.createdAt || `${item.addedDate}T00:00:00`,
+              reviewedDates: Array.isArray(item.reviewedDates)
+                ? [...new Set(item.reviewedDates.filter((date) => /^\d{4}-\d{2}-\d{2}$/.test(date)))]
+                : []
             }));
         } catch (error) {
           console.warn("无法读取本地单词数据：", error);
@@ -2478,13 +2704,23 @@
         return REVIEW_OFFSETS.map((offset) => addDays(word.addedDate, offset));
       }
 
-      function isDueToday(word) {
+      function isScheduledToday(word) {
         return getReviewDates(word).includes(localDateString());
+      }
+
+      function wasReviewedToday(word) {
+        return Array.isArray(word.reviewedDates) && word.reviewedDates.includes(localDateString());
+      }
+
+      function isDueToday(word) {
+        return isScheduledToday(word) && !wasReviewedToday(word);
       }
 
       function getNextReviewLabel(word) {
         const today = localDateString();
-        const nextDate = getReviewDates(word).find((date) => date >= today);
+        const nextDate = getReviewDates(word).find((date) =>
+          date > today || (date === today && !wasReviewedToday(word))
+        );
 
         if (!nextDate) return "本轮复习已完成";
         if (nextDate === today) return "今天";
@@ -2526,10 +2762,18 @@
       function setCategory(category) {
         if (!CATEGORY_LABELS[category]) return;
         state.activeCategory = category;
-        state.reviewOnly = false;
+        resetReviewState();
         state.searchQuery = "";
         elements.sourceSearchInput.value = "";
         renderWordbook();
+      }
+
+      function resetReviewState() {
+        state.reviewOnly = false;
+        state.reviewGrid = false;
+        state.reviewQueue = [];
+        state.reviewTotal = 0;
+        state.reviewCompleted = 0;
       }
 
       function renderWordbook() {
@@ -2546,14 +2790,16 @@
         elements.clearSearchButton.hidden = !isSearching;
         elements.reviewButton.hidden = isSearching;
         elements.reviewButton.classList.toggle("active", state.reviewOnly);
-        elements.reviewButton.innerHTML = state.reviewOnly
-          ? '<span aria-hidden="true">×</span><span>退出复习</span>'
-          : '<span aria-hidden="true">▶</span><span>开始复习</span>';
+        elements.reviewGridButton.hidden = isSearching || state.reviewOnly;
+        elements.reviewGridButton.classList.toggle("active", state.reviewGrid);
+        elements.reviewGridButton.innerHTML = state.reviewGrid
+          ? '<span aria-hidden="true">←</span><span>返回单词本</span>'
+          : '<span aria-hidden="true">▦</span><span>卡片总览</span>';
 
         const sortedWords = [...state.words]
           .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
         const categoryWords = sortedWords
-          .filter((word) => word.category === state.activeCategory)
+          .filter((word) => word.category === state.activeCategory);
         const searchWords = isSearching
           ? sortedWords.filter((word) =>
               normalizeSearchValue(`${word.source} ${word.word} ${word.meaning}`).includes(searchQuery)
@@ -2561,6 +2807,15 @@
           : [];
 
         const dueWords = categoryWords.filter(isDueToday);
+        const scheduledWords = categoryWords.filter(isScheduledToday);
+        const completedToday = scheduledWords.filter(wasReviewedToday).length;
+        const categoryFinished = scheduledWords.length > 0 && dueWords.length === 0;
+        elements.reviewButton.classList.toggle("completed", !state.reviewOnly && categoryFinished);
+        elements.reviewButton.innerHTML = state.reviewOnly
+          ? '<span aria-hidden="true">×</span><span>退出复习</span>'
+          : categoryFinished
+            ? '<span aria-hidden="true">✓</span><span>今日已完成</span>'
+            : '<span aria-hidden="true">▶</span><span>开始复习</span>';
         elements.totalWordCount.textContent = String(state.words.length);
         elements.dueWordCount.textContent = String(state.words.filter(isDueToday).length);
 
@@ -2568,24 +2823,31 @@
           elements.searchSummary.innerHTML = `找到 <strong>${searchWords.length}</strong> 个结果，已同时搜索听力和阅读。`;
           renderAllCards(searchWords, true);
         } else if (state.reviewOnly) {
-          elements.searchSummary.textContent = `当前查看：${CATEGORY_LABELS[state.activeCategory]}今日待复习单词。`;
-          renderReviewCards(dueWords);
+          elements.searchSummary.textContent = `单卡复习：${CATEGORY_LABELS[state.activeCategory]}，已完成 ${completedToday}/${scheduledWords.length}。`;
+          renderReviewSession(categoryWords);
+        } else if (state.reviewGrid) {
+          elements.searchSummary.textContent = `卡片总览：${CATEGORY_LABELS[state.activeCategory]}今日还剩 ${dueWords.length} 个待复习单词。`;
+          renderReviewCards(scheduledWords);
         } else {
-          elements.searchSummary.textContent = `当前查看：${CATEGORY_LABELS[state.activeCategory]}，单词按剑桥题号分组。`;
+          elements.searchSummary.textContent = categoryFinished
+            ? `✅ ${CATEGORY_LABELS[state.activeCategory]}今日复习已完成，共完成 ${completedToday} 个单词。`
+            : `当前查看：${CATEGORY_LABELS[state.activeCategory]}，单词按剑桥题号分组。`;
           renderAllCards(categoryWords, false);
         }
       }
 
       function createWordCardMarkup(word) {
         const due = isDueToday(word);
+        const reviewedToday = isScheduledToday(word) && wasReviewedToday(word);
         return `
-          <article class="word-card${due ? " due" : ""}">
+          <article class="word-card${due ? " due" : ""}${reviewedToday ? " reviewed-today" : ""}">
             <div class="word-main">
               <h2>${escapeHtml(word.word)}</h2>
               <div class="word-badges">
                 <span class="badge">${CATEGORY_LABELS[word.category]}</span>
                 <span class="badge source-label">${escapeHtml(word.source)}</span>
                 ${due ? '<span class="badge due-label">📢 今日待复习</span>' : ""}
+                ${reviewedToday ? '<span class="badge reviewed-label">✓ 今日已复习</span>' : ""}
               </div>
             </div>
             <div class="meaning">${escapeHtml(word.meaning)}</div>
@@ -2657,7 +2919,9 @@
           return;
         }
 
-        elements.wordList.innerHTML = words.map((word) => `
+        elements.wordList.innerHTML = words.map((word) => {
+          const reviewedToday = wasReviewedToday(word);
+          return `
           <article
             class="flip-card"
             tabindex="0"
@@ -2667,7 +2931,7 @@
           >
             <div class="flip-card-inner">
               <div class="flip-face flip-front">
-                <span class="badge due-label">📢 今日待复习</span>
+                <span class="badge ${reviewedToday ? "reviewed-label" : "due-label"}">${reviewedToday ? "✓ 今日已复习" : "📢 今日待复习"}</span>
                 <h2>${escapeHtml(word.word)}</h2>
                 <span class="badge source-label" style="margin-top: 12px;">${escapeHtml(word.source)}</span>
                 <span class="flip-prompt">点击卡片查看释义</span>
@@ -2679,7 +2943,127 @@
               </div>
             </div>
           </article>
-        `).join("");
+        `;
+        }).join("");
+      }
+
+      function startReviewSession() {
+        const pendingWords = state.words
+          .filter((word) => word.category === state.activeCategory && isDueToday(word))
+          .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+        state.reviewQueue = pendingWords.map((word) => word.id);
+        state.reviewTotal = pendingWords.length;
+        state.reviewCompleted = 0;
+        state.reviewOnly = true;
+        state.reviewGrid = false;
+        renderWordbook();
+      }
+
+      function exitReviewSession() {
+        resetReviewState();
+        renderWordbook();
+      }
+
+      function renderReviewSession(categoryWords) {
+        state.reviewQueue = state.reviewQueue.filter((id) => {
+          const word = state.words.find((item) => item.id === id);
+          return word && word.category === state.activeCategory && isDueToday(word);
+        });
+
+        const currentWord = state.words.find((word) => word.id === state.reviewQueue[0]);
+        const scheduledWords = categoryWords.filter(isScheduledToday);
+        const reviewedCount = scheduledWords.filter(wasReviewedToday).length;
+        elements.wordList.className = "word-list review-session-wrap";
+
+        if (!currentWord) {
+          const hasScheduledWords = scheduledWords.length > 0;
+          elements.wordList.innerHTML = `
+            <div class="review-session">
+              <div class="review-complete-card">
+                <div>
+                  <div class="empty-state-icon" aria-hidden="true">🎉</div>
+                  <h2>${hasScheduledWords ? "今日复习已完成！" : "今天没有需要复习的单词"}</h2>
+                  <p>${hasScheduledWords ? `已经完成 ${reviewedCount} 个${CATEGORY_LABELS[state.activeCategory]}单词，明天继续保持。` : "今天可以轻松一下，也可以用卡片总览随时巩固。"}</p>
+                  <button class="review-button completed" type="button" data-review-action="exit">
+                    <span aria-hidden="true">✓</span><span>返回单词本</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        const progress = state.reviewTotal
+          ? Math.round((state.reviewCompleted / state.reviewTotal) * 100)
+          : 0;
+        elements.wordList.innerHTML = `
+          <div class="review-session">
+            <div class="review-progress-row">
+              <span>${CATEGORY_LABELS[state.activeCategory]} · ${escapeHtml(currentWord.source)}</span>
+              <strong>已完成 ${state.reviewCompleted} / ${state.reviewTotal}</strong>
+            </div>
+            <div class="review-progress-track" role="progressbar" aria-label="今日复习进度" aria-valuemin="0" aria-valuemax="${state.reviewTotal}" aria-valuenow="${state.reviewCompleted}">
+              <span class="review-progress-bar" style="width: ${progress}%"></span>
+            </div>
+            <article
+              class="flip-card review-single-card"
+              tabindex="0"
+              role="button"
+              aria-label="${escapeHtml(currentWord.word)}，点击查看释义"
+              aria-pressed="false"
+            >
+              <div class="flip-card-inner">
+                <div class="flip-face flip-front">
+                  <span class="badge due-label">第 ${state.reviewCompleted + 1} 张</span>
+                  <h2>${escapeHtml(currentWord.word)}</h2>
+                  <span class="badge source-label" style="margin-top: 14px;">${escapeHtml(currentWord.source)}</span>
+                  <span class="flip-prompt">点击卡片查看释义</span>
+                </div>
+                <div class="flip-face flip-back">
+                  <span class="badge">${CATEGORY_LABELS[currentWord.category]} · ${escapeHtml(currentWord.source)}</span>
+                  <div class="flip-meaning">${escapeHtml(currentWord.meaning)}</div>
+                  <span class="flip-prompt">再次点击翻回单词</span>
+                </div>
+              </div>
+            </article>
+            <div class="review-session-actions" aria-label="复习结果">
+              <button class="review-action-button again" type="button" data-review-action="again">还不熟，稍后再来</button>
+              <button class="review-action-button known" type="button" data-review-action="known">记住了，下一个</button>
+            </div>
+          </div>
+        `;
+      }
+
+      function repeatCurrentReviewWord() {
+        if (!state.reviewQueue.length) return;
+        if (state.reviewQueue.length > 1) {
+          state.reviewQueue.push(state.reviewQueue.shift());
+        }
+        renderWordbook();
+        showToast("这个单词已放到后面，稍后会再次出现。");
+      }
+
+      function completeCurrentReviewWord() {
+        const currentId = state.reviewQueue[0];
+        const word = state.words.find((item) => item.id === currentId);
+        if (!word) return;
+
+        const previousDates = [...(word.reviewedDates || [])];
+        word.reviewedDates = [...new Set([...previousDates, localDateString()])];
+        if (!saveWords()) {
+          word.reviewedDates = previousDates;
+          return;
+        }
+
+        state.reviewQueue.shift();
+        state.reviewCompleted += 1;
+        renderWordbook();
+        if (state.reviewQueue.length) {
+          showToast("已记录，继续下一个。", "success");
+        } else {
+          showToast("今日复习已全部完成！", "success");
+        }
       }
 
       async function openModal(prefillWord = "") {
@@ -2810,7 +3194,8 @@
           category,
           source,
           addedDate: localDateString(now),
-          createdAt: now.toISOString()
+          createdAt: now.toISOString(),
+          reviewedDates: []
         });
 
         if (!saveWords()) {
@@ -2897,7 +3282,7 @@
 
       elements.sourceSearchInput.addEventListener("input", () => {
         state.searchQuery = elements.sourceSearchInput.value;
-        state.reviewOnly = false;
+        resetReviewState();
         renderWordbook();
       });
 
@@ -2916,9 +3301,21 @@
         button.addEventListener("click", () => setCategory(button.dataset.category));
       });
 
-      elements.reviewButton.addEventListener("click", () => {
-        state.reviewOnly = !state.reviewOnly;
+      elements.reviewGridButton.addEventListener("click", () => {
+        state.reviewGrid = !state.reviewGrid;
+        state.reviewOnly = false;
+        state.reviewQueue = [];
+        state.reviewTotal = 0;
+        state.reviewCompleted = 0;
         renderWordbook();
+      });
+
+      elements.reviewButton.addEventListener("click", () => {
+        if (state.reviewOnly) {
+          exitReviewSession();
+        } else {
+          startReviewSession();
+        }
       });
 
       elements.openAddModal.addEventListener("click", () => openModal());
@@ -2932,6 +3329,14 @@
       });
 
       elements.wordList.addEventListener("click", (event) => {
+        const reviewAction = event.target.closest("[data-review-action]");
+        if (reviewAction) {
+          const action = reviewAction.dataset.reviewAction;
+          if (action === "known") completeCurrentReviewWord();
+          if (action === "again") repeatCurrentReviewWord();
+          if (action === "exit") exitReviewSession();
+          return;
+        }
         const card = event.target.closest(".flip-card");
         if (card) toggleFlipCard(card);
       });
