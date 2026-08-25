@@ -1068,7 +1068,7 @@
     .word-card {
       position: relative;
       display: grid;
-      grid-template-columns: minmax(150px, 0.85fr) minmax(220px, 1.5fr) minmax(210px, 0.9fr);
+      grid-template-columns: minmax(150px, 0.85fr) minmax(220px, 1.5fr) minmax(210px, 0.9fr) auto;
       align-items: center;
       gap: 22px;
       min-height: 118px;
@@ -1158,6 +1158,42 @@
       background: #ddf5eb;
     }
 
+    .delete-word-button {
+      display: inline-flex;
+      min-height: 38px;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 0 11px;
+      border: 1px solid #efcaca;
+      border-radius: 10px;
+      color: #b43c3c;
+      background: #fff7f7;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+      transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+    }
+
+    .delete-word-button:hover {
+      border-color: #df8f8f;
+      background: #ffeaea;
+      transform: translateY(-1px);
+    }
+
+    .delete-word-button:focus-visible {
+      outline: 3px solid rgba(220, 70, 70, 0.2);
+      outline-offset: 2px;
+    }
+
+    .flip-card > .delete-word-button {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 5;
+    }
+
     .badge.source-label {
       color: #6e4b12;
       background: #fff1ce;
@@ -1234,6 +1270,7 @@
     }
 
     .flip-card {
+      position: relative;
       min-height: 260px;
       cursor: pointer;
       perspective: 1000px;
@@ -1754,7 +1791,7 @@
       }
 
       .word-card {
-        grid-template-columns: minmax(140px, 0.8fr) 1.4fr;
+        grid-template-columns: minmax(140px, 0.8fr) 1.4fr auto;
       }
 
       .card-dates {
@@ -2036,9 +2073,20 @@
       }
 
       .word-card {
+        position: relative;
         display: block;
         min-height: 0;
         padding: 19px;
+      }
+
+      .word-card .word-main {
+        padding-right: 66px;
+      }
+
+      .word-card > .delete-word-button {
+        position: absolute;
+        top: 15px;
+        right: 15px;
       }
 
       .meaning {
@@ -2861,6 +2909,9 @@
                 <strong>${getNextReviewLabel(word)}</strong>
               </div>
             </div>
+            <button class="delete-word-button" type="button" data-delete-word="${escapeHtml(word.id)}" aria-label="删除单词 ${escapeHtml(word.word)}">
+              <span aria-hidden="true">×</span><span>删除</span>
+            </button>
           </article>
         `;
       }
@@ -2929,6 +2980,9 @@
             aria-label="${escapeHtml(word.word)}，点击查看释义"
             aria-pressed="false"
           >
+            <button class="delete-word-button" type="button" data-delete-word="${escapeHtml(word.id)}" aria-label="删除单词 ${escapeHtml(word.word)}">
+              <span aria-hidden="true">×</span><span>删除</span>
+            </button>
             <div class="flip-card-inner">
               <div class="flip-face flip-front">
                 <span class="badge ${reviewedToday ? "reviewed-label" : "due-label"}">${reviewedToday ? "✓ 今日已复习" : "📢 今日待复习"}</span>
@@ -3013,6 +3067,9 @@
               aria-label="${escapeHtml(currentWord.word)}，点击查看释义"
               aria-pressed="false"
             >
+              <button class="delete-word-button" type="button" data-delete-word="${escapeHtml(currentWord.id)}" aria-label="删除单词 ${escapeHtml(currentWord.word)}">
+                <span aria-hidden="true">×</span><span>删除</span>
+              </button>
               <div class="flip-card-inner">
                 <div class="flip-face flip-front">
                   <span class="badge due-label">第 ${state.reviewCompleted + 1} 张</span>
@@ -3064,6 +3121,29 @@
         } else {
           showToast("今日复习已全部完成！", "success");
         }
+      }
+
+      function deleteWord(wordId) {
+        const wordIndex = state.words.findIndex((item) => item.id === wordId);
+        if (wordIndex < 0) return;
+
+        const word = state.words[wordIndex];
+        const confirmed = window.confirm(`确定要从单词本删除“${word.word}”吗？\n删除后无法恢复。`);
+        if (!confirmed) return;
+
+        state.words.splice(wordIndex, 1);
+        if (!saveWords()) {
+          state.words.splice(wordIndex, 0, word);
+          return;
+        }
+
+        if (state.reviewOnly && state.reviewQueue.includes(wordId)) {
+          state.reviewQueue = state.reviewQueue.filter((id) => id !== wordId);
+          state.reviewTotal = Math.max(state.reviewCompleted, state.reviewTotal - 1);
+        }
+
+        renderWordbook();
+        showToast(`已删除“${word.word}”。`, "success");
       }
 
       async function openModal(prefillWord = "") {
@@ -3128,6 +3208,62 @@
         elements.translateText.textContent = isLoading ? "翻译中…" : "自动翻译";
       }
 
+      async function fetchJsonWithTimeout(url, timeoutMs) {
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+
+        try {
+          const response = await fetch(url, {
+            signal: controller.signal,
+            cache: "no-store"
+          });
+          if (!response.ok) {
+            throw new Error(`翻译服务返回状态码 ${response.status}`);
+          }
+          return await response.json();
+        } finally {
+          window.clearTimeout(timeoutId);
+        }
+      }
+
+      function decodeTranslatedText(value) {
+        const textarea = document.createElement("textarea");
+        textarea.innerHTML = String(value || "");
+        return textarea.value.trim();
+      }
+
+      async function translateWithGoogle(word) {
+        const params = new URLSearchParams({
+          client: "gtx",
+          sl: "en",
+          tl: "zh-CN",
+          dt: "t",
+          q: word
+        });
+        const data = await fetchJsonWithTimeout(
+          `https://translate.googleapis.com/translate_a/single?${params.toString()}`,
+          5000
+        );
+        return Array.isArray(data?.[0])
+          ? data[0].map((segment) => segment?.[0] || "").join("").trim()
+          : "";
+      }
+
+      async function translateWithFallback(word) {
+        const params = new URLSearchParams({
+          q: word,
+          langpair: "en|zh-CN"
+        });
+        const data = await fetchJsonWithTimeout(
+          `https://api.mymemory.translated.net/get?${params.toString()}`,
+          9000
+        );
+        if (Number(data?.responseStatus || 200) >= 400) {
+          throw new Error(data?.responseDetails || "备用翻译服务暂时不可用");
+        }
+        return decodeTranslatedText(data?.responseData?.translatedText);
+      }
+
       async function translateWord() {
         const word = elements.wordInput.value.trim();
         if (!word) {
@@ -3140,22 +3276,16 @@
         setTranslationLoading(true);
 
         try {
-          const params = new URLSearchParams({
-            client: "gtx",
-            sl: "en",
-            tl: "zh-CN",
-            dt: "t",
-            q: word
-          });
-          const response = await fetch(`https://translate.googleapis.com/translate_a/single?${params.toString()}`);
-          if (!response.ok) {
-            throw new Error(`翻译服务返回状态码 ${response.status}`);
-          }
+          let translated = "";
+          let provider = "Google";
 
-          const data = await response.json();
-          const translated = Array.isArray(data?.[0])
-            ? data[0].map((segment) => segment?.[0] || "").join("").trim()
-            : "";
+          try {
+            translated = await translateWithGoogle(word);
+          } catch (googleError) {
+            console.info("Google 翻译暂时不可用，切换备用翻译：", googleError);
+            provider = "备用";
+            translated = await translateWithFallback(word);
+          }
 
           if (!translated) {
             throw new Error("翻译结果为空");
@@ -3163,10 +3293,10 @@
 
           elements.meaningInput.value = translated;
           elements.meaningInput.focus();
-          showToast("翻译完成，可以继续修改释义。", "success");
+          showToast(`${provider}翻译完成，可以继续修改释义。`, "success");
         } catch (error) {
           console.error("自动翻译失败：", error);
-          showToast("自动翻译失败，请检查网络或手动填写释义。", "error");
+          showToast("两个翻译通道都暂时不可用，请稍后重试或手动填写。", "error");
           elements.meaningInput.focus();
         } finally {
           setTranslationLoading(false);
@@ -3329,6 +3459,13 @@
       });
 
       elements.wordList.addEventListener("click", (event) => {
+        const deleteAction = event.target.closest("[data-delete-word]");
+        if (deleteAction) {
+          event.preventDefault();
+          event.stopPropagation();
+          deleteWord(deleteAction.dataset.deleteWord);
+          return;
+        }
         const reviewAction = event.target.closest("[data-review-action]");
         if (reviewAction) {
           const action = reviewAction.dataset.reviewAction;
@@ -3343,6 +3480,7 @@
 
       elements.wordList.addEventListener("keydown", (event) => {
         if (event.key !== "Enter" && event.key !== " ") return;
+        if (event.target.closest("[data-delete-word], [data-review-action]")) return;
         const card = event.target.closest(".flip-card");
         if (!card) return;
         event.preventDefault();
